@@ -4,7 +4,8 @@ require 'logging'
 logger = Logging.logger(STDOUT)
 logger.level = :debug
 
-EMOJI = %w(:nail_care: :speech_balloon: :boom: :eyes: :floppy_disk: :e-mail: :sexynam: :sparkling_heart:)
+EMOJI = %w(:nail_care: :speech_balloon: :boom: :eyes: :floppy_disk: :e-mail: :sexynam: :sparkling_heart: :dancers: :haircut: :saxophone:)
+REGEX = Regexp.new("([a-zA-Z]{2,4}-[0-9]{1,4})+")
 
 Slack.configure do |config|
   config.token = ENV['SLACK_TOKEN']
@@ -34,7 +35,6 @@ end
 # listen for message event - https://api.slack.com/events/message
 client.on :message do |data|
 
-  case data['text']
   # when 'hi', 'bot hi' then
   #   client.typing channel: data['channel']
   #   client.message channel: data['channel'], text: "Hello <@#{data['user']}>."
@@ -50,10 +50,6 @@ client.on :message do |data|
   #   client.web_client.chat_postMessage(post_message_payload(data))
   #   logger.debug("Attachment message posted")
 
-  when bot_mentioned(client)
-    client.message channel: data['channel'], text: EMOJI.sample
-    logger.debug("Bot mentioned in channel #{data['channel']}")
-
   # when 'bot help', 'help' then
   #   client.message channel: data['channel'], text: help
   #   logger.debug("A call for help")
@@ -62,10 +58,16 @@ client.on :message do |data|
   #   client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
   #   logger.debug("Unknown command")
 
-  when /([A-Z]{2,4}-[0-9]{1,4})+/ then
+
+  if data['text'] =~ bot_mentioned(client)
+    client.message channel: data['channel'], text: EMOJI.sample
+    logger.debug("Bot mentioned in channel #{data['channel']}")
+  end
+
+  if (matches = data['text'].scan(REGEX)).length > 0 then
     if data['text'] !~ /https:\/\//
-      data['text'].scan(/([A-Z]{2,4}-[0-9]{1,4})/).flatten.each do |match|
-        client.message channel: data['channel'], text: "https://vicedev.atlassian.net/browse/#{match}"
+      matches.flatten.each do |match|
+        client.message channel: data['channel'], text: "https://vicedev.atlassian.net/browse/#{match.upcase}"
         logger.debug("Bot linked issue #{match} in #{data['channel']}")
       end
     end

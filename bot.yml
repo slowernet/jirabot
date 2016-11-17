@@ -1,5 +1,5 @@
 name: Jirabot
-description: Links /[A-Z]{2,4}-[0-9]{1,4}/ to Jira issue URL
+description: Links /[a-zA-Z]{2,4}-[0-9]{1,4}/ to Jira issue URL
 avatar: resources/avatar.png
 #background: resources/background.png
 #config:
