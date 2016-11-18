@@ -64,7 +64,7 @@ client.on :message do |data|
     logger.debug("Bot mentioned in channel #{data['channel']}")
   end
 
-  if (matches = data['text'].scan(REGEX)).length > 0 then
+  if data['text'] && ((matches = data['text'].scan(REGEX)).length > 0) then
     if data['text'] !~ /https:\/\//
       matches.flatten.each do |match|
         client.message channel: data['channel'], text: "https://vicedev.atlassian.net/browse/#{match.upcase}"
