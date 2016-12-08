@@ -4,11 +4,12 @@ require 'logging'
 logger = Logging.logger(STDOUT)
 logger.level = :debug
 
-EMOJI = %w(:nail_care: :speech_balloon: :boom: :eyes: :floppy_disk: :e-mail: :sexynam: :sparkling_heart: :dancers: :haircut: :saxophone:)
-REGEX = Regexp.new("([a-zA-Z]{2,4}-[0-9]{1,4})+")
+EMOJI = %w(:nail_care: :speech_balloon: :boom: :eyes: :floppy_disk: :e-mail: :sexynam: :sparkling_heart: :dancers: :haircut: :saxophone: :pray: :yoda: :clubs: :soon: :circus_tent: :eggplant: :snowman:)
+REGEX = Regexp.new("([a-zA-Z]{2,6}-[0-9]{1,4})+")
+REJECT = Regexp.new("TONE") # skin tone
 
 Slack.configure do |config|
-  config.token = ENV['SLACK_TOKEN']
+  config.token =
   if not config.token
     logger.fatal('Missing ENV[SLACK_TOKEN]! Exiting program')
     exit
@@ -67,8 +68,10 @@ client.on :message do |data|
   if data['text'] && ((matches = data['text'].scan(REGEX)).length > 0) then
     if data['text'] !~ /https:\/\//
       matches.flatten.each do |match|
-        client.message channel: data['channel'], text: "https://vicedev.atlassian.net/browse/#{match.upcase}"
-        logger.debug("Bot linked issue #{match} in #{data['channel']}")
+        if match.upcase !~ REJECT
+          client.message channel: data['channel'], text: "https://vicedev.atlassian.net/browse/#{match.upcase}"
+          logger.debug("Bot linked issue #{match} in #{data['channel']}")
+        end
       end
     end
   end
