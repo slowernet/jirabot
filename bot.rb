@@ -9,7 +9,7 @@ REGEX = Regexp.new("([a-zA-Z]{2,6}-[0-9]{1,4})+")
 REJECT = Regexp.new("TONE") # skin tone
 
 Slack.configure do |config|
-  config.token =
+  config.token = ENV['SLACK_TOKEN']
   if not config.token
     logger.fatal('Missing ENV[SLACK_TOKEN]! Exiting program')
     exit
