@@ -4,7 +4,7 @@ require 'logging'
 logger = Logging.logger(STDOUT)
 logger.level = :debug
 
-EMOJI = %w(:nail_care: :speech_balloon: :boom: :eyes: :floppy_disk: :e-mail: :sexynam: :sparkling_heart: :dancers: :haircut: :saxophone: :pray: :yoda: :clubs: :soon: :circus_tent: :eggplant: :snowman:)
+EMOJI = %w(:nail_care: :speech_balloon: :boom: :eyes: :floppy_disk: :e-mail: :sexynam: :sparkling_heart: :dancers: :haircut: :saxophone: :pray: :yoda: :clubs: :soon: :circus_tent: :eggplant: :snowman: :rip: :cool: :repeat: :smoking: :moneybag:)
 REGEX = Regexp.new("([a-zA-Z]{2,6}-[0-9]{1,4})+")
 REJECT = Regexp.new("TONE") # skin tone
 
@@ -67,9 +67,9 @@ client.on :message do |data|
 
   if data['text'] && ((matches = data['text'].scan(REGEX)).length > 0) then
     if data['text'] !~ /https:\/\//
-      matches.flatten.each do |match|
-        if match.upcase !~ REJECT
-          client.message channel: data['channel'], text: "https://vicedev.atlassian.net/browse/#{match.upcase}"
+      matches.flatten.map(&:upcase).uniq.each do |match|
+        if match !~ REJECT
+          client.message channel: data['channel'], text: "https://vicedev.atlassian.net/browse/#{match}"
           logger.debug("Bot linked issue #{match} in #{data['channel']}")
         end
       end
